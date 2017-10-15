@@ -1,10 +1,10 @@
 # linkedOut
-OSINT tool for searching information on a web page.
+OSINT tool for searching information on a web page with python3.
 
 ## Dependencies
 To install the dependencies:
 
-    pip -r install requirements.txt
+    pip install -r requirements.txt
   
 ## Usage
 ~~~
