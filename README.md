@@ -8,16 +8,19 @@ To install the dependencies:
   
 ## Usage
 ~~~
-usage: linkedOut.py [-h] [-v] [-l] [-t] url
+usage: linkedOut.py [-h] [-v] [-l] [-li] [-le] [-d] [-t] url
 
 positional arguments:
-  url            URL to parse
+  url              URL to parse
 
 optional arguments:
-  -h, --help     show this help message and exit
-  -v, --verbose  Displays more information
-  -l, --links    Print every link in the URL
-  -t, --test     Test for broken links
+  -h, --help       show this help message and exit
+  -v, --verbose    Displays more information
+  -l, --links      Print every link in the URL
+  -li, --internal  Print every INTERNAL link in the URL
+  -le, --external  Print every EXTERNAL link in the URL
+  -d, --deface     Scan for defacement
+  -t, --test       Test for broken links
 ~~~
 
 ## Example
