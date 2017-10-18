@@ -3,3 +3,6 @@ bs4==0.0.1
 lxml==4.0.0
 requests==2.18.4
 termcolor==1.1.0
+pytesseract==0.1.7
+pillow==4.0.0
+

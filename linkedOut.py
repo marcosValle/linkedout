@@ -2,6 +2,7 @@
 
 import argparse
 import getLinks
+import deface
 
 parser = argparse.ArgumentParser()
 parser.add_argument("url", help="URL to parse")
@@ -9,9 +10,11 @@ parser.add_argument("-v", "--verbose", help="Displays more information",
         action="store_true")
 parser.add_argument("-l", "--links", help="Print every link in the URL",
         action="store_true")
-parser.add_argument("-li", "--internal", help="Print every link in the URL",
+parser.add_argument("-li", "--internal", help="Print every INTERNAL link in the URL",
         action="store_true")
-parser.add_argument("-le", "--external", help="Print every link in the URL",
+parser.add_argument("-le", "--external", help="Print every EXTERNAL link in the URL",
+        action="store_true")
+parser.add_argument("-d", "--deface", help="Scan for defacement",
         action="store_true")
 parser.add_argument("-t", "--test", help="Test for broken links",
         action="store_true")
@@ -32,9 +35,9 @@ print("""
 """)
 
 print("Check './linkedout.py -h' for help\n")
+baseUrl = getLinks.prepareUrl(args.url)
 
 if args.links:
-    baseUrl = getLinks.prepareUrl(args.url)
     print("[+] Collecting links...")
     links = getLinks.getRawLinks(baseUrl)
     print(baseUrl)
@@ -70,3 +73,6 @@ if args.links:
             print("[-] Broken links:")
             for l in list(set(links)-set(ok)):
                 print("\t"+l)
+
+if args.deface:
+    deface.checkDefacement(baseUrl)

@@ -12,7 +12,6 @@ def prepareUrl(baseUrl):
     return baseUrl
 
 def prettifyLinks(links, baseUrl):
-    print(links)
     baseUrlSplit = baseUrl.rsplit('/',1)
     if re.match("/.*\..*$", baseUrlSplit[1]):
         baseUrl = baseUrlSplit[0]
