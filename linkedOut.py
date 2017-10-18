@@ -9,6 +9,10 @@ parser.add_argument("-v", "--verbose", help="Displays more information",
         action="store_true")
 parser.add_argument("-l", "--links", help="Print every link in the URL",
         action="store_true")
+parser.add_argument("-li", "--internal", help="Print every link in the URL",
+        action="store_true")
+parser.add_argument("-le", "--external", help="Print every link in the URL",
+        action="store_true")
 parser.add_argument("-t", "--test", help="Test for broken links",
         action="store_true")
 args = parser.parse_args()
@@ -31,16 +35,30 @@ print("Check './linkedout.py -h' for help\n")
 
 if args.links:
     baseUrl = getLinks.prepareUrl(args.url)
-    print(baseUrl)
     print("[+] Collecting links...")
     links = getLinks.getRawLinks(baseUrl)
+    print(baseUrl)
     prettyLinks = getLinks.prettifyLinks(links, baseUrl)
 
-    if(args.verbose):
+    if args.verbose:
         for l in prettyLinks:
             print("\t"+l)
 
-    if(args.test):
+    if args.internal:
+        print("\n[+] Internal links: ")
+        internalLinks = getLinks.internalLinks(prettyLinks,baseUrl)
+        print("Total internal links: {}/{}".format(len(internalLinks), len(links)))
+        for l in internalLinks:
+            print("\t"+l)
+
+    if args.external:
+        print("\n[+] External links")
+        externalLinks = getLinks.externalLinks(prettyLinks,baseUrl)
+        print("Total External links: {}/{}".format(len(externalLinks), len(links)))
+        for l in getLinks.externalLinks(links, baseUrl):
+            print("\t"+l)
+
+    if args.test:
         print("\n[+] Testing links...")
         ok = getLinks.testLinks(prettyLinks)
 

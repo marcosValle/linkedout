@@ -12,8 +12,9 @@ def prepareUrl(baseUrl):
     return baseUrl
 
 def prettifyLinks(links, baseUrl):
+    print(links)
     baseUrlSplit = baseUrl.rsplit('/',1)
-    if '.' in baseUrlSplit[1]:
+    if re.match("/.*\..*$", baseUrlSplit[1]):
         baseUrl = baseUrlSplit[0]
 
     for idx,l in enumerate(links):
@@ -26,8 +27,30 @@ def prettifyLinks(links, baseUrl):
 
     return links
 
+def internalLinks(links, baseUrl):
+    internalLinks = []
+    protocolSplit = baseUrl.rsplit("/", 1)
+
+    regex = "^https?://(www\.)?"+protocolSplit[1]+".*"
+    for l in links:
+        if re.match(regex, l):
+            internalLinks.append(l)
+    return internalLinks
+
+def externalLinks(links, baseUrl):
+    return list(set(links) - set(internalLinks(links, baseUrl)))
+
 def getRawLinks(baseUrl):
-    result = requests.get(baseUrl)
+    try:
+        result = requests.get(baseUrl)
+    except requests.exceptions.MissingSchema as e:
+        print("Invalid URL >> http://YOUR_URL")
+        exit()
+    except requests.exceptions.ConnectionError as e:
+        print("[ERROR] Coud not connect")
+        print(e)
+        exit()
+
     content = result.content
 
     soup = BeautifulSoup(content, "lxml")
@@ -61,8 +84,9 @@ def getRawLinks(baseUrl):
     for a in soup.find_all("video", src=True):
             links.append(a.get("src"))
 
+    links = list(filter(None, links)) # Remove empty links
     for l in links:
-        if(re.match("[^@]+@[^@]+\.[^@]+", l)):
+        if(re.match("[^@]+@[^@]+\.[^@]+", l)):# Remove e-mails (mailto:)
             links.remove(l)
 
     links = list(set(links))
