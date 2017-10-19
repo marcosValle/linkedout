@@ -81,13 +81,10 @@ def runUrl(baseUrl):
 
 print("Check './linkedout.py -h' for help\n")
 baseUrl = getLinks.prepareUrl(args.url)
+runUrl(baseUrl)
 
-if not args.recursive:
-    runUrl(baseUrl)
-else:
-    print("[+] Collecting links...")
+if args.recursive:
     links = getLinks.getRawLinks(baseUrl)
-    print(baseUrl)
     prettyLinks = getLinks.prettifyLinks(links, baseUrl)
     internalLinks = getLinks.internalLinks(prettyLinks,baseUrl)
 
