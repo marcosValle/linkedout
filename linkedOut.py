@@ -18,6 +18,8 @@ parser.add_argument("-d", "--deface", help="Scan for defacement",
         action="store_true")
 parser.add_argument("-t", "--test", help="Test for broken links",
         action="store_true")
+parser.add_argument("-r", "--recursive", help="Scan every internal link recursively",
+        action="store_true")
 args = parser.parse_args()
 
 print("""
@@ -34,45 +36,60 @@ print("""
 **************************************************
 """)
 
+def runUrl(baseUrl):
+    if args.links:
+        print("==============================")
+        print("[+] Collecting links from...")
+        print(baseUrl)
+        links = getLinks.getRawLinks(baseUrl)
+        prettyLinks = getLinks.prettifyLinks(links, baseUrl)
+
+        if args.verbose:
+            for l in prettyLinks:
+                print("\t"+l)
+
+        if args.internal:
+            print("\n[+] Internal links: ")
+            internalLinks = getLinks.internalLinks(prettyLinks,baseUrl)
+            print("Total internal links: {}/{}".format(len(internalLinks), len(links)))
+            for l in internalLinks:
+                print("\t"+l)
+
+        if args.external:
+            print("\n[+] External links")
+            externalLinks = getLinks.externalLinks(prettyLinks,baseUrl)
+            print("Total External links: {}/{}".format(len(externalLinks), len(links)))
+            for l in getLinks.externalLinks(links, baseUrl):
+                print("\t"+l)
+
+        if args.test:
+            print("\n[+] Testing links...")
+            ok = getLinks.testLinks(prettyLinks)
+
+            print("[+] Links ok:")
+            for l in ok:
+                print("\t"+l)
+
+            if args.verbose:
+                print("[-] Broken links:")
+                for l in list(set(links)-set(ok)):
+                    print("\t"+l)
+
+    if args.deface:
+        deface.checkDefacement(baseUrl)
+
+
 print("Check './linkedout.py -h' for help\n")
 baseUrl = getLinks.prepareUrl(args.url)
 
-if args.links:
+if not args.recursive:
+    runUrl(baseUrl)
+else:
     print("[+] Collecting links...")
     links = getLinks.getRawLinks(baseUrl)
     print(baseUrl)
     prettyLinks = getLinks.prettifyLinks(links, baseUrl)
+    internalLinks = getLinks.internalLinks(prettyLinks,baseUrl)
 
-    if args.verbose:
-        for l in prettyLinks:
-            print("\t"+l)
-
-    if args.internal:
-        print("\n[+] Internal links: ")
-        internalLinks = getLinks.internalLinks(prettyLinks,baseUrl)
-        print("Total internal links: {}/{}".format(len(internalLinks), len(links)))
-        for l in internalLinks:
-            print("\t"+l)
-
-    if args.external:
-        print("\n[+] External links")
-        externalLinks = getLinks.externalLinks(prettyLinks,baseUrl)
-        print("Total External links: {}/{}".format(len(externalLinks), len(links)))
-        for l in getLinks.externalLinks(links, baseUrl):
-            print("\t"+l)
-
-    if args.test:
-        print("\n[+] Testing links...")
-        ok = getLinks.testLinks(prettyLinks)
-
-        print("[+] Links ok:")
-        for l in ok:
-            print("\t"+l)
-
-        if args.verbose:
-            print("[-] Broken links:")
-            for l in list(set(links)-set(ok)):
-                print("\t"+l)
-
-if args.deface:
-    deface.checkDefacement(baseUrl)
+    for url in internalLinks:
+        runUrl(url)
